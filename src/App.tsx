@@ -1,5 +1,5 @@
 // Importações essenciais para animações, ícones e hooks do React
-import { useState, useRef, useEffect, MutableRefObject } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaWhatsapp,
@@ -110,7 +110,7 @@ export default function DimensaoDoce() {
         className="mx-auto mb-14 max-w-md text-left"
       >
         <h1 className="bg-gradient-to-r from-yellow-200 via-pink-400 to-blue-300 bg-clip-text text-4xl font-extrabold leading-snug text-transparent sm:text-5xl">
-          🍭 Alucinohica
+          🍭 OVERWORLD
         </h1>
         <p className="mt-3 text-base text-white/70 sm:text-lg">
           Uma nova realidade onde sabores se tornam visões.
