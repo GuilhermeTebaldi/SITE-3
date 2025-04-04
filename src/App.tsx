@@ -1,257 +1,279 @@
-import { motion } from "framer-motion";
-import { FaInfinity, FaBrain, FaRocket } from "react-icons/fa";
-import { useState } from "react";
+// Importações essenciais para animações, ícones e hooks do React
+import { useState, useRef, useEffect, MutableRefObject } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaWhatsapp,
+  FaMagic,
+  FaTimesCircle,
+  FaMapMarkerAlt,
+  FaStore,
+} from "react-icons/fa";
 
-const doces = [
-  {
-    nome: "Nebulosa de Brigadeiro",
-    preco: "R$ 4,20",
-    descricao:
-      "Chocolate belga imerso em poeira cósmica de granulado. Um mergulho sensorial em uma galáxia doce.",
-    imagem:
-      "https://i.pinimg.com/736x/ea/69/8d/ea698df09c73b3a36a1d0a01cfa7eeb0.jpg",
-  },
-  {
-    nome: "Constelação de Beijinho",
-    preco: "R$ 4,00",
-    descricao:
-      "Coco cristalizado e leite condensado sideral com glitter comestível da Via Láctea.",
-    imagem:
-      "https://i.pinimg.com/736x/cc/5e/cb/cc5ecbfb1cf84eecefc7b7ec7db13a3d.jpg",
-  },
-  {
-    nome: "Cometa de Cajuzinho",
-    preco: "R$ 4,00",
-    descricao:
-      "Amendoim caramelizado em órbita com chocolate em fusão. Sabor que rasga o céu da boca.",
-    imagem:
-      "https://i.pinimg.com/736x/bd/f6/54/bdf654e249c865ec30b2368db9dbb4ea.jpg",
-  },
-];
-
+// Lista de produtos (doces)
 type Doce = {
+  id: number;
   nome: string;
   preco: string;
   descricao: string;
   imagem: string;
 };
 
-type ModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  doce: Doce | null;
-};
+const doces: Doce[] = [
+  {
+    id: 1,
+    nome: "Prisma Rosa Lunar",
+    preco: "R$ 20,00",
+    descricao:
+      "Refração mágica de morango estrelado com camadas de paz vibrante e brilho.",
+    imagem:
+      "https://i.pinimg.com/736x/60/ec/ca/60ecca65e8238bd5d9bc084173d4b852.jpg",
+  },
+  {
+    id: 2,
+    nome: "Gota de Néctar marrom",
+    preco: "R$ 23,00",
+    descricao:
+      "Pingos translúcidos de mel celestial com essência de calmaria e lavanda mística.",
+    imagem:
+      "https://i.pinimg.com/736x/41/73/3d/41733dfca50041f33ea7d137a76e3a4b.jpg",
+  },
+  {
+    id: 3,
+    nome: "Flor de Cacau azul Vibrante",
+    preco: "R$ 18,00",
+    descricao:
+      "Doce floral de cacau vibrante com notas etéreas de anis e harmonia psicodélica.",
+    imagem:
+      "https://i.pinimg.com/736x/bd/fb/92/bdfb924843fb6168a047a645a7760908.jpg",
+  },
+];
 
-function Modal({ isOpen, onClose, doce }: ModalProps) {
-  if (!isOpen || !doce) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-80 bg-gradient-to-br from-black via-fuchsia-900 to-indigo-900">
-      <div className="relative w-full max-w-lg rounded-3xl border border-pink-400 bg-black/90 p-8 text-white shadow-xl shadow-pink-500/10">
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-2 text-2xl text-pink-300 hover:text-yellow-300"
-        >
-          ×
-        </button>
-        <h3 className="mb-3 text-3xl font-black tracking-wide text-pink-300 drop-shadow">
-          {doce.nome}
-        </h3>
-        <p className="mb-5 italic leading-relaxed text-pink-100">
-          {doce.descricao}
-        </p>
-        <img
-          src={doce.imagem}
-          alt={doce.nome}
-          className="h-64 w-full rounded-xl border border-pink-500 object-cover"
-        />
-      </div>
-    </div>
-  );
-}
+// Componente principal da página
+export default function DimensaoDoce() {
+  const [formVisible, setFormVisible] = useState<number | null>(null);
+  const [nomeCliente, setNomeCliente] = useState<string>("");
+  const [produtoEscolhido, setProdutoEscolhido] = useState<number | null>(null);
+  const [mostrarLocalizacao, setMostrarLocalizacao] = useState(false);
+  const [retirada, setRetirada] = useState<"local" | "entrega">("local");
+  const [rua, setRua] = useState("");
+  const [numero, setNumero] = useState("");
+  const [bairro, setBairro] = useState("");
+  const [cidade, setCidade] = useState("");
 
-export default function DoceTripGalactica() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedDoce, setSelectedDoce] = useState<Doce | null>(null);
-  const [formVisible, setFormVisible] = useState(false);
-  const [pedido, setPedido] = useState({ nome: "", doce: doces[0].nome });
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
 
-  const openModal = (doce: Doce) => {
-    setSelectedDoce(doce);
-    setModalOpen(true);
-  };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !(wrapperRef.current as HTMLDivElement).contains(event.target as Node)
+      ) {
+        setFormVisible(null);
+        setMostrarLocalizacao(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  const closeModal = () => {
-    setModalOpen(false);
-    setSelectedDoce(null);
-  };
+  const enviarPedido = () => {
+    if (!mostrarLocalizacao) {
+      setMostrarLocalizacao(true);
+      return;
+    }
+    const doce = doces.find((d) => d.id === produtoEscolhido);
+    if (!doce) return;
 
-  const handlePedido = () => {
-    const link = `https://wa.me/SEUNUMERO?text=Olá! Meu nome é ${pedido.nome} e gostaria de comprar o doce: ${pedido.doce}.`;
+    let texto = `Olá, meu nome é ${nomeCliente} e gostaria de pedir o doce: ${doce.nome} - ${doce.preco}.`;
+    if (retirada === "entrega") {
+      texto += `\nDesejo receber em casa:\nRua: ${rua}, Nº ${numero}, Bairro: ${bairro}, Cidade: ${cidade} (acrescentar custo de entrega)`;
+    } else {
+      texto += "\nVou retirar no local.";
+    }
+    const link = `https://wa.me/5500000000000?text=${encodeURIComponent(texto)}`;
     window.open(link, "_blank");
   };
 
-  const closeForm = () => setFormVisible(false);
-
   return (
-    <div className="bg-gradient-to-b from-black via-indigo-950 to-black font-mono text-white">
-      {/* Hero */}
-      <section className="relative overflow-hidden px-6 py-32 text-center">
-        <motion.h1
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1 }}
-          className="bg-gradient-to-r from-pink-500 to-yellow-300 bg-clip-text text-6xl font-black text-transparent drop-shadow-lg"
-        >
-          🌌 Doce Trip Galáctica
-        </motion.h1>
-        <p className="mx-auto mt-6 max-w-xl text-xl opacity-80">
-          Desperte sua consciência através de sabores cósmicos. Uma jornada onde
-          o açúcar transcende dimensões.
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-tr from-fuchsia-900 via-sky-600 to-lime-300 px-4 py-10 text-white">
+      {/* Elementos visuais de fundo psicodélico */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute left-10 top-10 h-64 w-64 animate-pulse rounded-full bg-pink-400 opacity-20 blur-3xl" />
+        <div className="animate-spin-slow absolute bottom-0 right-0 h-80 w-80 rounded-full bg-cyan-400 opacity-30 blur-2xl" />
+      </div>
+
+      {/* Cabeçalho com título e slogan */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1 }}
+        className="mx-auto mb-14 max-w-md text-left"
+      >
+        <h1 className="bg-gradient-to-r from-yellow-200 via-pink-400 to-blue-300 bg-clip-text text-4xl font-extrabold leading-snug text-transparent sm:text-5xl">
+          🍭 Alucinohica
+        </h1>
+        <p className="mt-3 text-base text-white/70 sm:text-lg">
+          Uma nova realidade onde sabores se tornam visões.
         </p>
-        <button
-          onClick={() => setFormVisible(true)}
-          className="mt-10 rounded-full bg-gradient-to-r from-pink-500 to-yellow-300 px-8 py-4 font-bold text-black shadow-lg transition hover:shadow-pink-400/50"
-        >
-          Iniciar Experiência 🚀
-        </button>
-      </section>
+      </motion.div>
 
-      {/* Benefícios */}
-      <section className="mx-auto grid max-w-6xl gap-10 px-6 py-20 md:grid-cols-3">
-        <motion.div
-          whileHover={{ rotate: 1 }}
-          className="rounded-3xl border border-pink-500 bg-black/60 p-6 shadow-xl"
-        >
-          <FaInfinity className="mx-auto mb-4 animate-pulse text-6xl text-pink-300" />
-          <h3 className="mb-2 text-2xl font-bold text-pink-100">
-            Sabor Infinito
-          </h3>
-          <p>Ingredientes que expandem sua percepção.</p>
-        </motion.div>
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          className="rounded-3xl border border-yellow-400 bg-black/60 p-6 shadow-xl"
-        >
-          <FaBrain className="mx-auto mb-4 animate-spin text-6xl text-yellow-300" />
-          <h3 className="mb-2 text-2xl font-bold text-yellow-100">
-            Ativação Neural
-          </h3>
-          <p>Combinações que estimulam memórias sensoriais.</p>
-        </motion.div>
-        <motion.div
-          whileHover={{ y: -5 }}
-          className="rounded-3xl border border-purple-400 bg-black/60 p-6 shadow-xl"
-        >
-          <FaRocket className="mx-auto mb-4 animate-bounce text-6xl text-purple-300" />
-          <h3 className="mb-2 text-2xl font-bold text-purple-100">
-            Viagem Sensorial
-          </h3>
-          <p>Doces projetados para uma experiência transcendental.</p>
-        </motion.div>
-      </section>
-
-      {/* Doces */}
-      <section className="mx-auto max-w-6xl px-4 py-24">
-        <h2 className="mb-16 text-center text-5xl font-black text-pink-400">
-          Catálogo Intergaláctico
-        </h2>
-        <div className="grid gap-10 md:grid-cols-3">
-          {doces.map((doce, index) => (
-            <div
-              key={index}
-              onClick={() => openModal(doce)}
-              className="cursor-pointer overflow-hidden rounded-3xl border-2 border-pink-300 bg-gradient-to-br from-fuchsia-700 to-violet-600 transition hover:shadow-2xl"
-            >
-              <img
-                src={doce.imagem}
-                alt={doce.nome}
-                className="h-56 w-full border-b-4 border-pink-500 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="mb-1 text-2xl font-bold text-white">
-                  {doce.nome}
-                </h3>
-                <p className="font-semibold text-yellow-200">{doce.preco}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <Modal isOpen={modalOpen} onClose={closeModal} doce={selectedDoce} />
-
-      {formVisible && (
-        <div className="animate-fade-in fixed left-1/2 top-24 z-50 w-full max-w-md -translate-x-1/2 transform rounded-3xl bg-gradient-to-br from-black via-gray-900 to-indigo-900 p-6 text-white shadow-2xl">
-          <button
-            onClick={closeForm}
-            className="absolute right-4 top-3 text-2xl font-bold text-pink-400 hover:text-red-400"
+      {/* Lista de doces com formulário dinâmico */}
+      <div className="flex flex-col gap-14">
+        {doces.map((doce, index) => (
+          <motion.div
+            key={doce.id}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.95 }}
+            className={`flex flex-col ${index % 2 === 1 ? "sm:flex-row-reverse" : "sm:flex-row"} items-center gap-6 rounded-3xl border border-white/20 bg-white/10 p-5 shadow-lg backdrop-blur-2xl transition-all`}
           >
-            ×
-          </button>
-          <h2 className="mb-6 text-center text-2xl font-black text-yellow-300">
-            Reserve sua Viagem
-          </h2>
-          <label className="mb-4 block">
-            <span className="mb-1 block font-semibold">Nome</span>
-            <input
-              type="text"
-              className="w-full rounded-md border border-gray-500 bg-black/30 p-3"
-              value={pedido.nome}
-              onChange={(e) => setPedido({ ...pedido, nome: e.target.value })}
-              placeholder="Digite seu nome"
+            <img
+              src={doce.imagem}
+              alt={doce.nome}
+              className="h-56 w-full rounded-xl object-cover saturate-150 sm:w-1/2"
             />
-          </label>
-          <label className="mb-6 block">
-            <span className="mb-1 block font-semibold">Escolha o doce</span>
-            <select
-              className="w-full rounded-md border border-gray-500 bg-black/30 p-3"
-              value={pedido.doce}
-              onChange={(e) => setPedido({ ...pedido, doce: e.target.value })}
-            >
-              {doces.map((d, i) => (
-                <option key={i} value={d.nome}>
-                  {d.nome}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button
-            onClick={handlePedido}
-            className="w-full rounded-full bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-3 font-bold text-white shadow-xl transition hover:from-green-600 hover:to-emerald-700"
-          >
-            Finalizar pelo WhatsApp
-          </button>
-        </div>
-      )}
+            <div className="w-full text-left sm:w-1/2">
+              <h2 className="mb-3 text-3xl font-extrabold text-amber-400">
+                {doce.nome}
+              </h2>
+              <button
+                onClick={() => {
+                  setFormVisible(doce.id);
+                  setProdutoEscolhido(doce.id);
+                  setMostrarLocalizacao(false);
+                }}
+                className="rounded-full bg-gradient-to-r from-indigo-500 to-pink-500 px-5 py-2 font-semibold text-white shadow-xl transition-all hover:from-pink-500 hover:to-indigo-500"
+              >
+                <FaMagic className="mr-2 inline animate-bounce" /> Quero esse
+                agora
+              </button>
 
-      {/* CTA */}
-      <section className="bg-gradient-to-br from-fuchsia-900 via-indigo-800 to-black py-24 text-center">
-        <h2 className="mb-4 text-4xl font-black text-white">
-          Preparado para transcender?
-        </h2>
-        <p className="mb-6 text-lg text-gray-300">
-          Escolha seu doce intergaláctico e abra portais de sabor desconhecido.
-        </p>
-        <button className="rounded-full bg-pink-500 px-8 py-3 font-bold text-white transition hover:bg-pink-600">
-          Comprar Agora 🛸
-        </button>
-      </section>
+              <AnimatePresence>
+                {formVisible === doce.id && (
+                  <motion.div
+                    ref={wrapperRef}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    className="relative mt-5 rounded-xl border border-white/30 bg-slate-900/90 p-5 backdrop-blur-xl"
+                  >
+                    <button
+                      onClick={() => setFormVisible(null)}
+                      className="absolute right-4 top-3 text-white hover:text-red-400"
+                    >
+                      <FaTimesCircle size={20} />
+                    </button>
 
-      {/* Footer */}
-      <footer className="bg-black py-10 text-center text-white">
-        <p className="mb-2 text-sm text-pink-300">
-          Nos siga nas galáxias sociais
-        </p>
-        <div className="mb-4 flex justify-center gap-6">
-          <a href="#" className="hover:text-yellow-300">
-            Instagram
-          </a>
-          <a href="#" className="hover:text-yellow-300">
-            Facebook
-          </a>
-        </div>
-        <p className="text-xs text-gray-500">
-          &copy; 2025 Doce Trip Galáctica. Todos os direitos reservados.
+                    {/* Nome do cliente */}
+                    <label className="mb-2 block text-sm">Seu nome:</label>
+                    <input
+                      type="text"
+                      className="w-full rounded-lg p-2 text-black"
+                      placeholder="Digite seu nome"
+                      value={nomeCliente}
+                      onChange={(e) => setNomeCliente(e.target.value)}
+                    />
+
+                    {/* Escolha do produto */}
+                    <label className="mb-2 mt-4 block text-sm">
+                      Escolha o doce:
+                    </label>
+                    <select
+                      className="w-full rounded-lg p-2 text-black"
+                      value={produtoEscolhido ?? ""}
+                      onChange={(e) =>
+                        setProdutoEscolhido(Number(e.target.value))
+                      }
+                    >
+                      <option value="">Selecione</option>
+                      {doces.map((op) => (
+                        <option key={op.id} value={op.id}>
+                          {op.nome} - {op.preco}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Opção de retirada ou entrega */}
+                    <div className="mt-4">
+                      <label className="mb-2 block text-sm">
+                        Como deseja receber?
+                      </label>
+                      <div className="flex gap-4">
+                        <button
+                          className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold ${retirada === "local" ? "bg-green-600" : "bg-white/20"} border border-white/30 text-white`}
+                          onClick={() => setRetirada("local")}
+                        >
+                          <FaStore /> Retirar no local
+                        </button>
+                        <button
+                          className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold ${retirada === "entrega" ? "bg-green-600" : "bg-white/20"} border border-white/30 text-white`}
+                          onClick={() => setRetirada("entrega")}
+                        >
+                          <FaMapMarkerAlt /> Entrega em casa
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Campos de endereço se entrega */}
+                    {mostrarLocalizacao && retirada === "entrega" && (
+                      <div className="mt-4 space-y-3">
+                        <label className="block text-sm">Rua:</label>
+                        <input
+                          type="text"
+                          className="w-full rounded-lg p-2 text-black"
+                          value={rua}
+                          onChange={(e) => setRua(e.target.value)}
+                          placeholder="Rua"
+                        />
+
+                        <label className="block text-sm">Número:</label>
+                        <input
+                          type="text"
+                          className="w-full rounded-lg p-2 text-black"
+                          value={numero}
+                          onChange={(e) => setNumero(e.target.value)}
+                          placeholder="Número"
+                        />
+
+                        <label className="block text-sm">Bairro:</label>
+                        <input
+                          type="text"
+                          className="w-full rounded-lg p-2 text-black"
+                          value={bairro}
+                          onChange={(e) => setBairro(e.target.value)}
+                          placeholder="Bairro"
+                        />
+
+                        <label className="block text-sm">Cidade:</label>
+                        <input
+                          type="text"
+                          className="w-full rounded-lg p-2 text-black"
+                          value={cidade}
+                          onChange={(e) => setCidade(e.target.value)}
+                          placeholder="Cidade"
+                        />
+                      </div>
+                    )}
+
+                    {/* Botão enviar ou avançar */}
+                    <button
+                      onClick={enviarPedido}
+                      className="text-md mt-4 flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-purple-500 to-cyan-500 p-3 font-bold text-white hover:from-cyan-500 hover:to-purple-500"
+                    >
+                      <FaWhatsapp />{" "}
+                      {mostrarLocalizacao ? "Enviar Pedido" : "Avançar"}
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Rodapé */}
+      <footer className="mt-20 border-t border-white/10 pt-6 text-center text-xs text-white/60">
+        <p>
+          🌀 Experiência visual e sabor transcendental — &copy; 2025 Alucinohica
         </p>
       </footer>
     </div>
