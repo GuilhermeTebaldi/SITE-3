@@ -21,28 +21,17 @@ type Doce = {
 const doces: Doce[] = [
   {
     id: 1,
-    nome: "Nether Rosa Lunar",
-    preco: "R$ 20,00",
-    descricao:
-      "Refração mágica de morango estrelado com camadas de paz vibrante e brilho.",
+    nome: "Nether Rosa Natural",
+    preco: "R$ 50,00",
+    descricao: "Refração mágica natural estrelado com camadas de paz.",
     imagem:
       "https://i.pinimg.com/736x/60/ec/ca/60ecca65e8238bd5d9bc084173d4b852.jpg",
   },
   {
     id: 2,
-    nome: "creeper marrom",
-    preco: "R$ 23,00",
-    descricao:
-      "Pingos translúcidos de mel celestial com essência de calmaria e lavanda mística.",
-    imagem:
-      "https://i.pinimg.com/736x/41/73/3d/41733dfca50041f33ea7d137a76e3a4b.jpg",
-  },
-  {
-    id: 3,
-    nome: "End azul Vibrante",
-    preco: "R$ 18,00",
-    descricao:
-      "Doce floral de cacau vibrante com notas etéreas de anis e harmonia psicodélica.",
+    nome: "End azul menta",
+    preco: "R$ 100,00",
+    descricao: "Doce floral de cacau vibrante com ( Menta ) e harmonia.",
     imagem:
       "https://i.pinimg.com/736x/bd/fb/92/bdfb924843fb6168a047a645a7760908.jpg",
   },
@@ -109,7 +98,7 @@ export default function DimensaoDoce() {
         transition={{ duration: 1 }}
         className="mx-auto mb-14 max-w-md text-left"
       >
-        <h1 className="bg-gradient-to-r from-yellow-200 via-pink-400 to-blue-300 bg-clip-text text-4xl font-extrabold leading-snug text-transparent sm:text-5xl">
+        <h1 className="bg-gradient-to-r from-yellow-200 via-pink-400 to-blue-900 bg-clip-text text-4xl font-extrabold leading-snug text-transparent sm:text-5xl">
           🍭 OVERWORLD
         </h1>
         <p className="mt-3 text-base text-white/70 sm:text-lg">
