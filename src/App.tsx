@@ -21,7 +21,7 @@ type Doce = {
 const doces: Doce[] = [
   {
     id: 1,
-    nome: "Prisma Rosa Lunar",
+    nome: "Nether Rosa Lunar",
     preco: "R$ 20,00",
     descricao:
       "Refração mágica de morango estrelado com camadas de paz vibrante e brilho.",
@@ -30,7 +30,7 @@ const doces: Doce[] = [
   },
   {
     id: 2,
-    nome: "Gota de Néctar marrom",
+    nome: "creeper marrom",
     preco: "R$ 23,00",
     descricao:
       "Pingos translúcidos de mel celestial com essência de calmaria e lavanda mística.",
@@ -39,7 +39,7 @@ const doces: Doce[] = [
   },
   {
     id: 3,
-    nome: "Flor de Cacau azul Vibrante",
+    nome: "End azul Vibrante",
     preco: "R$ 18,00",
     descricao:
       "Doce floral de cacau vibrante com notas etéreas de anis e harmonia psicodélica.",
